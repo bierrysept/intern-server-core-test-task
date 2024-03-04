@@ -23,17 +23,36 @@ namespace {
 			this->next = next;
 		}
 
-		FIFOListedNode<T>* getNext(int depth = 0) {
+		FIFOListedNode<T>* getNext(int depth = 1) {
 			if (depth == 0) {
-				return this->next;
+				return this;
 			}
 
+			if (depth == 1) {
+				return this->next;
+			}
 
 			if (!this->next) {
 				throw MyFIFO::ListElementDoesNotExist();
 			}
 
 			return this->next->getNext(depth - 1);
+		}
+
+		FIFOListedNode<T>* getLast(unsigned int &depth) {
+			FIFOListedNode<T>* element;
+			if (next != NULL) {
+				element = next->getLast(depth);
+			}
+			else {
+				element = this;
+			}
+			
+			if (depth == 0) {
+				return element;
+			}
+			depth--;
+			return this;
 		}
 
 		T getValue() {
@@ -104,9 +123,10 @@ public:
 	class FIFOListed {
 	FIFOListedNode<T>* start = NULL;
 	FIFOListedNode<T>* end = NULL;
+	unsigned int length = 0;
 public:
 	bool isEmpty() {
-		return !start && !end;
+		return !length;
 	}
 
 	void push(T item) {
@@ -115,11 +135,12 @@ public:
 		if (this->isEmpty()) {
 			start = newNode;
 			end = newNode;
-			return;
 		}
-
-		start->setNext(newNode);
-		start = newNode;
+		else {
+			start->setNext(newNode);
+			start = newNode;
+		}
+		length++;
 	}
 
 	void pop() {
@@ -131,12 +152,14 @@ public:
 			FIFOListedNode<T>* node = start;
 			delete node;
 			start = end = NULL;
-			return;
+		}
+		else {
+			FIFOListedNode<T>* tmp = end->getNext();
+			delete end;
+			end = tmp;
 		}
 
-		FIFOListedNode<T>* tmp = end->getNext();
-		delete end;
-		end = tmp;
+		length--;
 	}
 
 	T first(unsigned int depth = 0) {
@@ -144,15 +167,15 @@ public:
 			throw ListEmpty();
 		}
 
-		return this->end->getValue();
+		return this->end->getNext(depth)->getValue();
 	}
 
 	T last(unsigned int depth = 0) {
 		if (this->isEmpty()) {
 			throw ListEmpty();
 		}
-
-		return this->start->getValue();
+		depth++;
+		return this->end->getLast(depth)->getValue();
 	}
 };
 }

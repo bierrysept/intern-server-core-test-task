@@ -122,6 +122,33 @@ namespace CoreTest
 			}
 		}
 
+		TEST_METHOD(testDepthListed) {
+			MyFIFO::FIFOListed<int> fifoListed = MyFIFO::FIFOListed<int>();
+			fifoListed.push(1);
+			fifoListed.push(2);
+			fifoListed.push(3);
+			fifoListed.push(4);
+			fifoListed.push(5);
+			fifoListed.push(6);
+			fifoListed.push(7);
+			fifoListed.push(8);
+			fifoListed.push(9);
+
+			Assert::AreEqual(1, fifoListed.first(0), L"first(0) must be 1");
+			Assert::AreEqual(2, fifoListed.first(1), L"first(1) must be 2");
+			Assert::AreEqual(3, fifoListed.first(2), L"first(2) must be 3");
+			Assert::AreEqual(4, fifoListed.first(3), L"first(3) must be 4");
+			Assert::AreEqual(5, fifoListed.first(4), L"first(4) must be 5");
+			Assert::AreEqual(6, fifoListed.first(5), L"first(5) must be 6");
+
+			Assert::AreEqual(9, fifoListed.last(0), L"last(0) must be 9");
+			Assert::AreEqual(8, fifoListed.last(1), L"last(1) must be 8");
+			Assert::AreEqual(7, fifoListed.last(2), L"last(2) must be 7");
+			Assert::AreEqual(6, fifoListed.last(3), L"last(3) must be 6");
+			Assert::AreEqual(5, fifoListed.last(4), L"last(4) must be 5");
+		}
+
+
 		TEST_METHOD(testFastSort) {
 			std::list<char> list1 = {0};
 			Assert::IsTrue(list1 == FastSort::sort(list1));
